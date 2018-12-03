@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * User
  *
- * @ORM\Table(name="user")
+ * @ORM\Table(name="users")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
 class User implements UserInterface
@@ -44,11 +44,22 @@ class User implements UserInterface
      */
     private $articles;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Role")
+     * @ORM\JoinTable(name="users_roles",
+     *     joinColumns={@ORM\JoinColumn(name="user_id",referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="role_id",referencedColumnName="id")}
+     *     )
+     */
+    private $roles;
 
     public function __construct()
     {
 
         $this->articles = new ArrayCollection();
+        $this->roles = new ArrayCollection();
     }
 
     /**
@@ -172,11 +183,21 @@ class User implements UserInterface
      * and populated in any number of different ways when the user object
      * is created.
      *
-     * @return (Role|string)[] The user roles
+     *
      */
     public function getRoles()
     {
-        return [];
+        $stringRoles = [];
+
+        foreach ($this->roles as $role) {
+
+            /**@var Role $role*/
+
+            $stringRoles[] = $role->getName();
+
+
+        }
+        return $stringRoles;
     }
 
     /**
@@ -210,6 +231,35 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * @param \AppBundle\Entity\Role $role
+     *
+     * @return User
+     */
+    public function addRole(Role $role)
+    {
+        $this->roles[] = $role;
+
+        return $this;
+    }
+
+    /**
+     * @param Article $article
+     * @return bool
+     */
+    public function isAuthor(Article $article)
+    {
+        return ($article->getAuthorId() != $this->getId());
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return in_array('ROLE_ADMIN',$this->getRoles());
     }
 }
 

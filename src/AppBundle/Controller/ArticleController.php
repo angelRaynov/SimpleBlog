@@ -3,8 +3,8 @@
 namespace AppBundle\Controller;
 
 
-
 use AppBundle\Entity\Article;
+use AppBundle\Entity\User;
 use AppBundle\Form\ArticleType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,17 +25,16 @@ class ArticleController extends Controller
     public function create(Request $request)
     {
         $article = new Article();
-        $form = $this->createForm(ArticleType::class,$article);
+        $form = $this->createForm(ArticleType::class, $article);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $article->setAuthor($this->getUser());
             $em = $this->getDoctrine()->getManager();
             $em->persist($article);
             $em->flush();
-//            return $this->redirectToRoute('blog_index');        //when i figure out the index i have to change it
-            return $this->redirectToRoute('article_create');
+            return $this->redirectToRoute('blog_index');
         }
         return $this->render('article/create.html.twig',
             array('form' => $form->createView()));
@@ -50,7 +49,7 @@ class ArticleController extends Controller
     {
         $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
 
-        return $this->render('article/article.html.twig',['article' => $article]);
+        return $this->render('article/article.html.twig', ['article' => $article]);
     }
 
     /**
@@ -66,11 +65,20 @@ class ArticleController extends Controller
         $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
 
         if ($article === null) {
-//            return $this->redirectToRoute('blog_index');  // when index is done
-            return $this->redirectToRoute('article_edit');
+            return $this->redirectToRoute('blog_index');
         }
 
-        $form = $this->createForm(ArticleType::class,$article);
+        $currentUser = $this->getUser();
+
+        /** @var User $currentUser*/
+
+        if ($currentUser->isAuthor($article) && !$currentUser->isAdmin()){
+
+            return $this->redirectToRoute('blog_index');
+        }
+
+
+        $form = $this->createForm(ArticleType::class, $article);
 
         $form->handleRequest($request);
 
@@ -103,21 +111,27 @@ class ArticleController extends Controller
         $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
 
         if ($article === null) {
-//            return $this->redirectToRoute('blog_index'); // changeeeeee it
-            return $this->redirectToRoute('article_create');
-
+            return $this->redirectToRoute('blog_index');
         }
 
-        $form = $this->createForm(ArticleType::class,$article);
+        $currentUser = $this->getUser();
+
+        /** @var User $currentUser*/
+
+        if ($currentUser->isAuthor($article) && !$currentUser->isAdmin()){
+
+            return $this->redirectToRoute('blog_index');
+        }
+
+        $form = $this->createForm(ArticleType::class, $article);
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isSubmitted()){
+        if ($form->isValid() && $form->isSubmitted()) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($article);
             $em->flush();
-//            return $this->redirectToRoute('blog_index');  // Change it
-            return $this->redirectToRoute('article_create');
+            return $this->redirectToRoute('blog_index');
         }
 
         return $this->render('article/delete.html.twig', array(
