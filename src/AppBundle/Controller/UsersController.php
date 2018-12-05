@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Article;
 use AppBundle\Entity\Role;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,5 +50,33 @@ class UsersController extends Controller
         return $this->render("user/register.html.twig");
     }
 
+    /**
+     * @Route("/profile", name="user_profile")
+     */
+    public function profile()
+    {
+        $userId = $this->getUser()->getId();
+        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+        return $this->render("user/profile.html.twig", ['user' => $user]);
+    }
+
+    public function showMyArticles()
+    {
+        $repository = $this
+            ->getDoctrine()
+            ->getRepository(Article::class);
+        $authorId = $this
+            ->getUser()
+            ->getId();
+        $articles = $repository->findBy(
+            ['authorId' => $authorId],
+            ['dateAdded' => 'DESC']
+        );
+        return $this->render('user/articles.html.twig',
+            [
+                'articles' => $articles
+            ]);
+    }
 
 }

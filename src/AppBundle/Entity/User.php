@@ -251,7 +251,7 @@ class User implements UserInterface
      */
     public function isAuthor(Article $article)
     {
-        return ($article->getAuthorId() != $this->getId());
+        return ($article->getAuthorId() == $this->getId());
     }
 
     /**

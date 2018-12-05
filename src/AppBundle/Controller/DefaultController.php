@@ -12,7 +12,7 @@ class DefaultController extends Controller
     /**
      * @Route("/", name="blog_index")
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
         $articles= $this->getDoctrine()->getRepository(Article::class)->findAll();
 

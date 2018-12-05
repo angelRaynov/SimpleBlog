@@ -72,7 +72,7 @@ class ArticleController extends Controller
 
         /** @var User $currentUser*/
 
-        if ($currentUser->isAuthor($article) && !$currentUser->isAdmin()){
+        if (!$currentUser->isAuthor($article) && !$currentUser->isAdmin()){
 
             return $this->redirectToRoute('blog_index');
         }
@@ -118,7 +118,7 @@ class ArticleController extends Controller
 
         /** @var User $currentUser*/
 
-        if ($currentUser->isAuthor($article) && !$currentUser->isAdmin()){
+        if (!$currentUser->isAuthor($article) && !$currentUser->isAdmin()){
 
             return $this->redirectToRoute('blog_index');
         }
@@ -138,5 +138,19 @@ class ArticleController extends Controller
             'article' => $article,
             'form' => $form->createView()
         ));
+    }
+
+    /**
+     *
+     * @Route("/myArticles", name="user_articles")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     *
+     */
+    public function myArticles(){
+        $articles = $this->getDoctrine()->getRepository(Article::class)
+            ->findBy(['authorId' => $this->getUser()]);
+        return $this->render('user/myArticles.html.twig',
+            ['articles' => $articles]
+        );
     }
 }
