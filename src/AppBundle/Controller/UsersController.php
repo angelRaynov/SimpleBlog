@@ -33,12 +33,12 @@ class UsersController extends Controller
 
             $user->setPassword($password);
 
-            $roleRepository = $this->getDoctrine()->getRepository(Role::class);
+//            $roleRepository = $this->getDoctrine()->getRepository(Role::class);
 
-            $userRole = $roleRepository->findOneBy(['name' => 'ROLE_USER']);
+//            $userRole = $roleRepository->findOneBy(['name' => 'ROLE_USER']);
 
 
-            $user->addRole($userRole);
+//            $user->addRole($userRole);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);

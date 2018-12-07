@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * User
  *
  * @ORM\Table(name="users")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ArticleRepository")
  */
 class User implements UserInterface
 {
@@ -30,6 +30,8 @@ class User implements UserInterface
      */
     private $email;
 
+
+
     /**
      * @var string
      *
@@ -38,55 +40,40 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @var ArrayCollection
+     * @var string
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Article",mappedBy="author")
+     * @ORM\Column(name="name", type="string", length=255)
      */
-    private $articles;
+    private $name;
 
     /**
-     * @var ArrayCollection
+     * @var int
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Role")
-     * @ORM\JoinTable(name="users_roles",
-     *     joinColumns={@ORM\JoinColumn(name="user_id",referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="role_id",referencedColumnName="id")}
-     *     )
+     * @ORM\Column(name="age", type="integer", )
      */
-    private $roles;
-
-    public function __construct()
-    {
-
-        $this->articles = new ArrayCollection();
-        $this->roles = new ArrayCollection();
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getArticles()
-    {
-        return $this->articles;
-    }
-
-    /**
-     * @param \AppBundle\Entity\Article $article
-     *
-     * @return $User
-     */
-    public function addPost(Article $article)
-    {
-        $this->articles[] = $article;
-        return $this;
-    }
+    private $age;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="fullName", type="string", length=255)
+     * @ORM\Column(name="phone", type="string", length=255)
      */
-    private $fullName;
+    private $phone;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="bio", type="text", nullable=true)
+     */
+    private $bio;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="avatar", type="string", length=255, nullable=true)
+     */
+    private $avatar;
+
 
 
     /**
@@ -124,22 +111,6 @@ class User implements UserInterface
     }
 
     /**
-     * Set password
-     *
-     * @param string $password
-     *
-     * @return User
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * Get password
-     *
      * @return string
      */
     public function getPassword()
@@ -148,27 +119,131 @@ class User implements UserInterface
     }
 
     /**
-     * Set fullName
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * Set name
      *
-     * @param string $fullName
+     * @param string $name
      *
      * @return User
      */
-    public function setFullName($fullName)
+    public function setName($name)
     {
-        $this->fullName = $fullName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get fullName
+     * Get name
      *
      * @return string
      */
-    public function getFullName()
+    public function getName()
     {
-        return $this->fullName;
+        return $this->name;
+    }
+
+    /**
+     * Set age
+     *
+     * @param integer $age
+     *
+     * @return User
+     */
+    public function setAge($age)
+    {
+        $this->age = $age;
+
+        return $this;
+    }
+
+    /**
+     * Get age
+     *
+     * @return int
+     */
+    public function getAge()
+    {
+        return $this->age;
+    }
+
+    /**
+     * Set phone
+     *
+     * @param string $phone
+     *
+     * @return User
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * Get phone
+     *
+     * @return string
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Set bio
+     *
+     * @param string $bio
+     *
+     * @return User
+     */
+    public function setBio($bio)
+    {
+        $this->bio = $bio;
+
+        return $this;
+    }
+
+    /**
+     * Get bio
+     *
+     * @return string
+     */
+    public function getBio()
+    {
+        return $this->bio;
+    }
+
+    /**
+     * Set avatar
+     *
+     * @param string $avatar
+     *
+     * @return User
+     */
+    public function setAvatar($avatar)
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * Get avatar
+     *
+     * @return string
+     */
+    public function getAvatar()
+    {
+        return $this->avatar;
     }
 
     /**
@@ -183,21 +258,11 @@ class User implements UserInterface
      * and populated in any number of different ways when the user object
      * is created.
      *
-     *
+     * @return (Role|string)[] The user roles
      */
     public function getRoles()
     {
-        $stringRoles = [];
-
-        foreach ($this->roles as $role) {
-
-            /**@var Role $role*/
-
-            $stringRoles[] = $role->getName();
-
-
-        }
-        return $stringRoles;
+        return [];
     }
 
     /**
@@ -219,7 +284,7 @@ class User implements UserInterface
      */
     public function getUsername()
     {
-        return $this->getEmail();
+        return $this->email;
     }
 
     /**
@@ -233,33 +298,5 @@ class User implements UserInterface
         // TODO: Implement eraseCredentials() method.
     }
 
-    /**
-     * @param \AppBundle\Entity\Role $role
-     *
-     * @return User
-     */
-    public function addRole(Role $role)
-    {
-        $this->roles[] = $role;
-
-        return $this;
-    }
-
-    /**
-     * @param Article $article
-     * @return bool
-     */
-    public function isAuthor(Article $article)
-    {
-        return ($article->getAuthorId() == $this->getId());
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAdmin()
-    {
-        return in_array('ROLE_ADMIN',$this->getRoles());
-    }
 }
 

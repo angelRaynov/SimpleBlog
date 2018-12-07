@@ -68,14 +68,11 @@ class ArticleController extends Controller
             return $this->redirectToRoute('blog_index');
         }
 
-        $currentUser = $this->getUser();
+//        $currentUser = $this->getUser();
 
         /** @var User $currentUser*/
 
-        if (!$currentUser->isAuthor($article) && !$currentUser->isAdmin()){
 
-            return $this->redirectToRoute('blog_index');
-        }
 
 
         $form = $this->createForm(ArticleType::class, $article);
@@ -118,10 +115,6 @@ class ArticleController extends Controller
 
         /** @var User $currentUser*/
 
-        if (!$currentUser->isAuthor($article) && !$currentUser->isAdmin()){
-
-            return $this->redirectToRoute('blog_index');
-        }
 
         $form = $this->createForm(ArticleType::class, $article);
 
